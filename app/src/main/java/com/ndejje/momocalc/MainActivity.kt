@@ -32,8 +32,11 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            MaterialTheme {
-                Surface { MoMoCalcScreen() }
+            MaterialTheme (typography = MoMoTypography) {
+                Surface (modifier = Modifier.fillMaxSize())
+                {
+                    MoMoCalcScreen()
+                }
             }
         }
     }
@@ -75,7 +78,7 @@ fun MoMoCalcScreen() {
     val numericAmount = amountInput.toDoubleOrNull() ?: 0.0
     val isError =amountInput.isNotEmpty() && amountInput.toDoubleOrNull() == null
 
-    //Calculate fee based on the selected network
+    //Calculate fee based on the selected network. in this case MTN
     val fee = calculateMtnFee(numericAmount)
 
     //Format fee for display
