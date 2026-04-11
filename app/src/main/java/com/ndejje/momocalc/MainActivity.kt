@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -11,10 +12,15 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
@@ -25,9 +31,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.ndejje.momocalc.ui.theme.MoMoCalculatorAppTheme
 import kotlinx.coroutines.delay
 
 class MainActivity : ComponentActivity() {
@@ -35,14 +44,48 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            MaterialTheme (typography = MoMoTypography) {
-                Surface (modifier = Modifier.fillMaxSize())
-                {
-                    MoMoCalcScreen()
+            MoMoCalculatorAppTheme {             // our custom theme (Part B)
+                Surface(modifier = Modifier.fillMaxSize()) {
+                    Scaffold(
+                        topBar = { MoMoTopBar() }
+                    ) { innerPadding ->
+                        MoMoCalcScreen(
+                            modifier = Modifier.padding(innerPadding)
+                        )
+                    }
                 }
             }
         }
     }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun MoMoTopBar() {
+    CenterAlignedTopAppBar(
+        title = {
+            Text(
+                text = stringResource(R.string.app_title),
+                style = MaterialTheme.typography.headlineMedium
+            )
+        },
+        navigationIcon = {
+            Image(
+                painter = painterResource(id = R.drawable.ic_momo_logo),
+                contentDescription = "MoMo Logo",
+                modifier = Modifier
+                    .padding(start = dimensionResource(R.dimen.spacing_medium))
+                    .height(32.dp)
+                    .wrapContentWidth(),
+                contentScale = ContentScale.Fit
+            )
+        },
+        colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+            containerColor = MaterialTheme.colorScheme.primary,
+            titleContentColor = MaterialTheme.colorScheme.onPrimary,
+            navigationIconContentColor = MaterialTheme.colorScheme.onPrimary
+        )
+    )
 }
 
 @Composable
@@ -75,7 +118,7 @@ fun HoistedAmountInput(
 }
 
 @Composable
-fun MoMoCalcScreen() {
+fun MoMoCalcScreen(modifier: Modifier = Modifier) {
     var amountInput by remember { mutableStateOf("") }
     var isCalculating by remember { mutableStateOf(false) } //Track loading state
     var showResult by remember { mutableStateOf(false) } //Track result to show fee
