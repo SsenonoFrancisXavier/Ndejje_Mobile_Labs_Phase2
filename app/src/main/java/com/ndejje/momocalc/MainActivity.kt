@@ -180,11 +180,20 @@ fun MoMoCalcScreen(modifier: Modifier = Modifier) {
                 Text(text = "Applying tiered rates...", style = MaterialTheme.typography.bodyLarge)
             }
             showResult && !isError -> {
-                Text(
-                    text = stringResource(R.string.fee_label, formattedFee),
-                    style = MaterialTheme.typography.bodyLarge,
-                    textAlign = TextAlign.Center
-                )
+                // Wrapping the fee display in a themed, shaped Surface
+                Surface(
+                    shape = MaterialTheme.shapes.medium,  // 16dp rounded corners
+                    color = MaterialTheme.colorScheme.secondary.copy(alpha = 0.15f),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(
+                        text = stringResource(R.string.fee_label, formattedFee),
+                        style = MaterialTheme.typography.bodyLarge,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.padding(16.dp)
+                    )
+                }
+
                 val rateLabel = if (numericAmount < 250000) "3% rate applied" else "1.5% rate applied"
                 Text(
                     text = rateLabel,
@@ -220,7 +229,7 @@ fun MoMoCalculatorAppTheme(
     MaterialTheme(
         colorScheme = colorScheme,
         typography  = MoMoTypography,
-        //shapes      = MoMoShapes,
+        shapes      = MoMoShapes,
         content     = content
     )
 }
@@ -246,6 +255,23 @@ fun PreviewDark() {
         MoMoCalcScreen()
     }
 }
+
+@Preview(name = "Fee Card – Light", showBackground = true)
+@Preview(
+    name = "Fee Card – Dark",
+    showBackground = true,
+    uiMode = Configuration.UI_MODE_NIGHT_YES
+)
+@Composable
+fun PreviewFeeCard() {
+    MoMoAppTheme {
+        Surface(modifier = Modifier.padding(16.dp)) {
+            MoMoCalcScreen()
+        }
+    }
+}
+
+
 @Composable
 fun MoMoCalcPreview() {
     MaterialTheme {

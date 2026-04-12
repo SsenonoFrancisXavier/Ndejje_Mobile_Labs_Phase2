@@ -47,7 +47,7 @@ fun MoMoAppTheme(
     MaterialTheme(
         colorScheme = LightColorScheme,
         typography  = MoMoTypography,   // from Module 5 Typography.kt
-        //shapes      = MoMoShapes,        // from Part D below
+        shapes      = MoMoShapes,        // from Part D below
         content     = content
     )
 }
