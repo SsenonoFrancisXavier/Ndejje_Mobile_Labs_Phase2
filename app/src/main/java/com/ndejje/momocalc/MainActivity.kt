@@ -31,6 +31,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.layout.ContentScale
@@ -120,9 +121,12 @@ fun HoistedAmountInput(
 
 @Composable
 fun MoMoCalcScreen(modifier: Modifier = Modifier) {
-    var amountInput by remember { mutableStateOf("") }
-    var isCalculating by remember { mutableStateOf(false) } //Track loading state
-    var showResult by remember { mutableStateOf(false) } //Track result to show fee
+
+    //rememberSaveable - Survives rotations, light-to-dark mode switches, and even the app being
+    // pushed to the background by a phone call.
+    var amountInput by rememberSaveable { mutableStateOf("") }
+    var isCalculating by rememberSaveable { mutableStateOf(false) } //Track loading state
+    var showResult by rememberSaveable { mutableStateOf(false) } //Track result to show fee
 
     val numericAmount = amountInput.toDoubleOrNull() ?: 0.0
     val isError =amountInput.isNotEmpty() && amountInput.toDoubleOrNull() == null
@@ -135,14 +139,13 @@ fun MoMoCalcScreen(modifier: Modifier = Modifier) {
 
     //LaunchedEffect reacts to every change in amountInput
     LaunchedEffect(amountInput) {
-        if (amountInput.isNotEmpty() && !isError){
-            showResult = false          // Hide old result while typing
+        if (amountInput.isNotEmpty() && !isError && !showResult){
             delay(1000)      // Wait for 1 second of "no typing"
             isCalculating = true        // Start simulation
             delay(500)       // Simulate network latency
             isCalculating = false       // End simulation
             showResult = true           // Show final result
-        } else {
+        } else if(amountInput.isEmpty()){
             showResult = false
             isCalculating = false
         }
@@ -177,7 +180,10 @@ fun MoMoCalcScreen(modifier: Modifier = Modifier) {
         //UI Logic based on the simulation state
         when {
             isCalculating -> {
-                Text(text = "Applying tiered rates...", style = MaterialTheme.typography.bodyLarge)
+                Text(text = "Applying tiered rates...",
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = MaterialTheme.colorScheme.primary
+                )
             }
             showResult && !isError -> {
                 // Wrapping the fee display in a themed, shaped Surface
@@ -190,9 +196,12 @@ fun MoMoCalcScreen(modifier: Modifier = Modifier) {
                         text = stringResource(R.string.fee_label, formattedFee),
                         style = MaterialTheme.typography.bodyLarge,
                         textAlign = TextAlign.Center,
-                        modifier = Modifier.padding(16.dp)
+                        modifier = Modifier.padding(16.dp),
+                        color = MaterialTheme.colorScheme.onSecondaryContainer
                     )
                 }
+
+                Spacer(modifier = Modifier.height(8.dp))
 
                 val rateLabel = if (numericAmount < 250000) "3% rate applied" else "1.5% rate applied"
                 Text(
@@ -207,7 +216,6 @@ fun MoMoCalcScreen(modifier: Modifier = Modifier) {
     }
 }
 
-@Composable
 fun calculateMtnFee(amount: Double): Double {
     return if (amount < 2500000) {
         //UGX 0 – 2,499,999 - 3%
