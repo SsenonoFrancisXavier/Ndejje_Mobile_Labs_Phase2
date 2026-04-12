@@ -1,10 +1,12 @@
 package com.ndejje.momocalc
 
+import android.content.res.Configuration
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -36,7 +38,6 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.ndejje.momocalc.ui.theme.MoMoCalculatorAppTheme
 import kotlinx.coroutines.delay
 
 class MainActivity : ComponentActivity() {
@@ -208,7 +209,43 @@ fun calculateMtnFee(amount: Double): Double {
     }
 }
 
+
+@Composable
+fun MoMoCalculatorAppTheme(
+    darkTheme: Boolean = isSystemInDarkTheme(), // auto-detect by default
+    content: @Composable () -> Unit
+) {
+    val colorScheme = if (darkTheme) DarkColorScheme else LightColorScheme
+
+    MaterialTheme(
+        colorScheme = colorScheme,
+        typography  = MoMoTypography,
+        //shapes      = MoMoShapes,
+        content     = content
+    )
+}
+
 @Preview(showBackground = true)
+
+@Preview(name = "Light Mode", showBackground = true)
+@Composable
+fun PreviewLight() {
+    MoMoCalculatorAppTheme (darkTheme = false) {
+        MoMoCalcScreen()
+    }
+}
+
+@Preview(
+    name = "Dark Mode",
+    showBackground = true,
+    uiMode = Configuration.UI_MODE_NIGHT_YES
+)
+@Composable
+fun PreviewDark() {
+    MoMoCalculatorAppTheme(darkTheme = true) {
+        MoMoCalcScreen()
+    }
+}
 @Composable
 fun MoMoCalcPreview() {
     MaterialTheme {
