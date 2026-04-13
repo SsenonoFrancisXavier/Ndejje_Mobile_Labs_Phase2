@@ -215,12 +215,12 @@ fun MoMoCalcScreen(modifier: Modifier = Modifier) {
                         text = stringResource(R.string.fee_label, formattedFee),
                         style = MaterialTheme.typography.bodyLarge,
                         textAlign = TextAlign.Center,
-                        modifier = Modifier.padding(16.dp),
+                        modifier = Modifier.padding(dimensionResource(id = R.dimen.spacing_medium)),
                         color = MaterialTheme.colorScheme.onSecondaryContainer
                     )
                 }
 
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(dimensionResource(id=R.dimen.spacing_small)))
 
                 val rateLabel = if (numericAmount < 250000) "3% rate applied" else "1.5% rate applied"
                 Text(
