@@ -39,11 +39,30 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
+
+        // 1. Install the Splash Screen
+        val splashScreen = installSplashScreen()
         super.onCreate(savedInstanceState)
+
+        // 2. State to track if we should keep showing the splash
+        var keepSplashScreenOn = true
+
+        // 3. Set the condition
+        splashScreen.setKeepOnScreenCondition { keepSplashScreenOn }
+
+
+        // 4. Start a 5-second timer to flip the switch
+        lifecycleScope.launch {
+            delay(1000) // 5000ms = 5 seconds
+            keepSplashScreenOn = false
+        }
         enableEdgeToEdge()
         setContent {
             MoMoCalculatorAppTheme {             // our custom theme (Part B)
@@ -122,8 +141,8 @@ fun HoistedAmountInput(
 @Composable
 fun MoMoCalcScreen(modifier: Modifier = Modifier) {
 
-    //rememberSaveable - Survives rotations, light-to-dark mode switches, and even the app being
-    // pushed to the background by a phone call.
+    /*rememberSaveable - Survives rotations, light-to-dark mode switches, and even the app being
+     pushed to the background by a phone call.*/
     var amountInput by rememberSaveable { mutableStateOf("") }
     var isCalculating by rememberSaveable { mutableStateOf(false) } //Track loading state
     var showResult by rememberSaveable { mutableStateOf(false) } //Track result to show fee
